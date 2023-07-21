@@ -18,7 +18,7 @@ export class Owner {
   })
   lastName: string;
 
-  @Prop([{ type: Types.ObjectId, ref: Cat.name }])
+  @Prop([{ type: Types.ObjectId, ref: 'Cat' }])
   cats: Cat[];
 }
 

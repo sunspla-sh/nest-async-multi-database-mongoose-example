@@ -94,6 +94,7 @@ describe('OwnersService', () => {
     });
 
     it('should return the result of invoking the static create method of owner model', () => {
+      const createOwnerDto = new CreateOwnerDto();
       expect(ownerModel.create).toHaveReturnedWith(
         ownersService.create(createOwnerDto),
       );
