@@ -5,6 +5,7 @@ import { Model, Types } from 'mongoose';
 import { OwnersService } from './owners.service';
 import { Owner } from './schemas/owner.schema';
 import { CreateOwnerDto } from './create-owner.dto';
+import { NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION } from '../constants';
 
 describe('OwnersService', () => {
   let ownersService: OwnersService;
@@ -15,7 +16,10 @@ describe('OwnersService', () => {
       providers: [
         OwnersService,
         {
-          provide: getModelToken(Owner.name),
+          provide: getModelToken(
+            Owner.name,
+            NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION,
+          ),
           useValue: createMock<Model<Owner>>(),
         },
       ],

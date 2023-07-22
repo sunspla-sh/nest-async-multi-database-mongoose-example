@@ -3,10 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Owner, OwnerDocument } from './schemas/owner.schema';
 import { CreateOwnerDto } from './create-owner.dto';
+import { NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION } from 'src/constants';
 
 @Injectable()
 export class OwnersService {
-  constructor(@InjectModel(Owner.name) private ownerModel: Model<Owner>) {}
+  constructor(
+    @InjectModel(Owner.name, NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION)
+    private ownerModel: Model<Owner>,
+  ) {}
 
   findAll(): Promise<OwnerDocument[]> {
     return this.ownerModel.find().exec();
