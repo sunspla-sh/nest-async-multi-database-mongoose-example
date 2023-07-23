@@ -27,7 +27,7 @@ describe('OwnersService', () => {
 
     ownersService = moduleRef.get<OwnersService>(OwnersService);
     ownerModel = moduleRef.get<Model<Owner>, DeepMocked<Model<Owner>>>(
-      getModelToken(Owner.name),
+      getModelToken(Owner.name, NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION),
     );
   });
 

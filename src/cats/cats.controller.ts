@@ -24,7 +24,7 @@ export class CatsController {
   }
 
   @Post()
-  createMany(@Body() createCatArrayDto: CreateCatArrayDto) {
+  createMultiple(@Body() createCatArrayDto: CreateCatArrayDto) {
     return this.catsService.createMultiple(createCatArrayDto);
   }
 
