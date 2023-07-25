@@ -32,6 +32,11 @@ describe('CatsController', () => {
     it('should be a method', () => {
       expect(catsController.findAll).toEqual(expect.any(Function));
     });
+
+    it('should invoke findAll method of an instance of CatsService', () => {
+      catsController.findAll();
+      expect(catsService.findAll).toHaveBeenCalled();
+    })
   });
 
   describe('findById', () => {
