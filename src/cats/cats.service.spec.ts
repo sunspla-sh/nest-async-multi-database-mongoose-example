@@ -1,7 +1,7 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CatsService } from './cats.service';
 import { Cat } from './schemas/cat.schema';
 import { NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION } from '../constants';
@@ -42,11 +42,31 @@ describe('CatsService', () => {
     it('should be a method', () => {
       expect(catsService.findAll).toEqual(expect.any(Function));
     });
+
+    it('should invoke the static find method of cat model', () => {
+      catsService.findAll();
+      expect(catModel.find).toHaveBeenCalled();
+    });
+
+    it('should return the result of invoking the static find method of cat model', () => {
+      expect(catModel.find).toHaveReturnedWith(catsService.findAll());
+    });
   });
 
   describe('findById', () => {
     it('should be a method', () => {
       expect(catsService.findById).toEqual(expect.any(Function));
+    });
+
+    it('should invoke the static findById method of cat model with a string argument', () => {
+      const id = new Types.ObjectId().toString();
+      catsService.findById(id);
+      expect(catModel.findById).toHaveBeenCalledWith(id);
+    });
+
+    it('should return the result of invoking the static findById method of cat model with a string argument', () => {
+      const id = new Types.ObjectId().toString();
+      expect(catModel.findById).toHaveReturnedWith(catsService.findById(id));
     });
   });
 
