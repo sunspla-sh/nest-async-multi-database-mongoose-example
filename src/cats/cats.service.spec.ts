@@ -48,8 +48,13 @@ describe('CatsService', () => {
       expect(catModel.find).toHaveBeenCalled();
     });
 
-    it('should return the result of invoking the static find method of cat model', () => {
-      expect(catModel.find).toHaveReturnedWith(catsService.findAll());
+    it('should invoke the exec method returned by calling the static find method of cat model', () => {
+      catsService.findAll();
+      expect(catModel.find().exec).toHaveBeenCalled();
+    });
+
+    it('should return the result of invoking the exec method of the query returned by calling the static find method of cat model', () => {
+      expect(catModel.find().exec).toHaveReturnedWith(catsService.findAll());
     });
   });
 
@@ -64,9 +69,17 @@ describe('CatsService', () => {
       expect(catModel.findById).toHaveBeenCalledWith(id);
     });
 
-    it('should return the result of invoking the static findById method of cat model with a string argument', () => {
+    it('should invoke the exec method of the query returned by calling the static findById method of cat model with a string argument', () => {
       const id = new Types.ObjectId().toString();
-      expect(catModel.findById).toHaveReturnedWith(catsService.findById(id));
+      catsService.findById(id);
+      expect(catModel.findById(id).exec).toHaveBeenCalled();
+    });
+
+    it('should return the result of invoking the exec method of the query returned by calling static findById method of cat model with a string argument', () => {
+      const id = new Types.ObjectId().toString();
+      expect(catModel.findById(id).exec).toHaveReturnedWith(
+        catsService.findById(id),
+      );
     });
   });
 
@@ -85,6 +98,25 @@ describe('CatsService', () => {
   describe('remove', () => {
     it('should be a method', () => {
       expect(catsService.remove).toEqual(expect.any(Function));
+    });
+
+    it('should invoke the static findByIdAndDelete method of cat model with a string argument', () => {
+      const id = new Types.ObjectId().toString();
+      catsService.remove(id);
+      expect(catModel.findByIdAndDelete).toHaveBeenCalledWith(id);
+    });
+
+    it('should invoke the exec method of the query returned by calling the static findByIdAndDelete method of cat model with a string argument', () => {
+      const id = new Types.ObjectId().toString();
+      catsService.remove(id);
+      expect(catModel.findByIdAndDelete(id).exec).toHaveBeenCalled();
+    });
+
+    it('should return the result of invoking the exec method of the query returned by calling the static findByIdAndDelete method of cat model with a string argument', () => {
+      const id = new Types.ObjectId().toString();
+      expect(catModel.findByIdAndDelete(id).exec).toHaveReturnedWith(
+        catsService.remove(id),
+      );
     });
   });
 });
