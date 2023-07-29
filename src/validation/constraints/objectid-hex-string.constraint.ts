@@ -3,11 +3,16 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { isObjectIdOrHexString } from 'mongoose';
+import { isObjectIdOrHexString, Types } from 'mongoose';
 
 @ValidatorConstraint({ name: '', async: false })
-export class ObjectIdConstraint implements ValidatorConstraintInterface {
-  validate(value: any, args: ValidationArguments) {
+export class ObjectIdHexStringConstraint
+  implements ValidatorConstraintInterface
+{
+  validate(value: any, args: ValidationArguments): boolean {
+    if (value instanceof Types.ObjectId) {
+      return false;
+    }
     return isObjectIdOrHexString(value);
   }
 

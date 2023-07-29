@@ -1,5 +1,5 @@
 import { Length, IsOptional, IsArray, Validate } from 'class-validator';
-import { ObjectIdConstraint } from '../validation/constraints/objectid.constraint';
+import { ObjectIdHexStringConstraint } from '../validation/constraints/objectid-hex-string.constraint';
 
 export class CreateOwnerDto {
   @Length(1, 64)
@@ -10,7 +10,7 @@ export class CreateOwnerDto {
 
   @IsOptional()
   @IsArray()
-  @Validate(ObjectIdConstraint, {
+  @Validate(ObjectIdHexStringConstraint, {
     each: true,
   })
   cats: string[];

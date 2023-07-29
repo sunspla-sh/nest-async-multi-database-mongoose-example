@@ -1,5 +1,5 @@
 import { Length, IsInt, Min, Max, Validate } from 'class-validator';
-import { ObjectIdConstraint } from '../validation/constraints/objectid.constraint';
+import { ObjectIdHexStringConstraint } from '../validation/constraints/objectid-hex-string.constraint';
 
 export class CreateCatDto {
   @Length(1, 64)
@@ -10,6 +10,6 @@ export class CreateCatDto {
   @Max(32)
   age: number;
 
-  @Validate(ObjectIdConstraint)
+  @Validate(ObjectIdHexStringConstraint)
   owner: string;
 }
