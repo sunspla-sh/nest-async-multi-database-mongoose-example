@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './create-cat.dto';
 import { CreateCatArrayDto } from './create-cat-array.dto';
-import { ParseObjectIdPipe } from '../validation/pipes/parse-objectid.pipe';
+import { ParseObjectIdHexStringPipe } from '../validation/pipes/parse-objectid-hex-string.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -14,7 +14,7 @@ export class CatsController {
   }
 
   @Get(':id')
-  findById(@Param('id', ParseObjectIdPipe) id: string) {
+  findById(@Param('id', ParseObjectIdHexStringPipe) id: string) {
     return this.catsService.findById(id);
   }
 
@@ -29,7 +29,7 @@ export class CatsController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseObjectIdPipe) id: string) {
+  remove(@Param('id', ParseObjectIdHexStringPipe) id: string) {
     return this.catsService.remove(id);
   }
 }

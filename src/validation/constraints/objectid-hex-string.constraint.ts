@@ -10,10 +10,7 @@ export class ObjectIdHexStringConstraint
   implements ValidatorConstraintInterface
 {
   validate(value: any, args: ValidationArguments): boolean {
-    if (value instanceof Types.ObjectId) {
-      return false;
-    }
-    return isObjectIdOrHexString(value);
+    return !(value instanceof Types.ObjectId) && isObjectIdOrHexString(value);
   }
 
   defaultMessage(args: ValidationArguments) {

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
 import { OwnersService } from './owners.service';
 import { CreateOwnerDto } from './create-owner.dto';
-import { ParseObjectIdPipe } from '../validation/pipes/parse-objectid.pipe';
+import { ParseObjectIdHexStringPipe } from '../validation/pipes/parse-objectid-hex-string.pipe';
 
 @Controller('owners')
 export class OwnersController {
@@ -13,7 +13,7 @@ export class OwnersController {
   }
 
   @Get(':id')
-  findById(@Param('id', ParseObjectIdPipe) id: string) {
+  findById(@Param('id', ParseObjectIdHexStringPipe) id: string) {
     return this.ownersService.findById(id);
   }
 
@@ -23,7 +23,7 @@ export class OwnersController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseObjectIdPipe) id: string) {
+  remove(@Param('id', ParseObjectIdHexStringPipe) id: string) {
     return this.ownersService.remove(id);
   }
 }

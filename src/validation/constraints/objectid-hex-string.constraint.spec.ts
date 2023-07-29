@@ -26,7 +26,7 @@ describe('ObjectIdHexStringConstraint', () => {
       );
     });
 
-    it('should return true when passed a 24 character ObjectId hex string', () => {
+    it('should return true when invoked with a 24 character ObjectId hex string', () => {
       const objectIdHexString = new Types.ObjectId().toString();
       const fakeVArgs: ValidationArguments = {
         value: '',
@@ -41,7 +41,7 @@ describe('ObjectIdHexStringConstraint', () => {
       expect(validateSpy).toHaveReturnedWith(true);
     });
 
-    it('should return false when passed anything other than a 24 character ObjectId hex string', () => {
+    it('should return false when invoked with anything other than a 24 character ObjectId hex string', () => {
       const validateSpy = jest.spyOn(objectIdHexStringConstraint, 'validate');
       const fakeVArgs: ValidationArguments = {
         value: '',
