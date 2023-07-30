@@ -7,6 +7,9 @@ import {
   NEST_MULTIDB_WOLVES_CONNECTION,
 } from './constants';
 
+import { OwnersModule } from './owners/owners.module';
+import { CatsModule } from './cats/cats.module';
+
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/nest-multidb-owners-and-cats', {
@@ -15,6 +18,8 @@ import {
     MongooseModule.forRoot('mongodb://localhost/nest-multidb-wolves', {
       connectionName: NEST_MULTIDB_WOLVES_CONNECTION,
     }),
+    OwnersModule,
+    CatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

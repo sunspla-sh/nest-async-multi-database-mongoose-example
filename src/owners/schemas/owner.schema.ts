@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { Cat } from '../../cats/schemas/cat.schema';
 
 @Schema()
 export class Owner {
@@ -17,9 +16,6 @@ export class Owner {
     maxlength: 64,
   })
   lastName: string;
-
-  @Prop([{ type: Types.ObjectId, ref: 'Cat' }])
-  cats: Cat[];
 }
 
 export const OwnerSchema = SchemaFactory.createForClass(Owner);

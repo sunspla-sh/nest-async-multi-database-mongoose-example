@@ -18,7 +18,7 @@ export class Cat {
   })
   age: number;
 
-  @Prop({ type: Types.ObjectId, ref: 'Owner' })
+  @Prop({ type: Types.ObjectId, ref: Owner.name })
   owner: Owner;
 }
 

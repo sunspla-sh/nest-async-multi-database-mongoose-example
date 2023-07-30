@@ -1,10 +1,12 @@
 import { TestingModule, Test } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { CatsService } from './cats.service';
 import { Cat } from './schemas/cat.schema';
 import { NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION } from '../constants';
+import { CreateCatDto } from './create-cat.dto';
+import { CreateCatArrayDto } from './create-cat-array.dto';
 
 describe('CatsService', () => {
   let catsService: CatsService;
@@ -20,6 +22,10 @@ describe('CatsService', () => {
             NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION,
           ),
           useValue: createMock<Model<Cat>>(),
+        },
+        {
+          provide: getConnectionToken(NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION),
+          useValue: createMock<Connection>(),
         },
       ],
     }).compile();
@@ -87,11 +93,36 @@ describe('CatsService', () => {
     it('should be a method', () => {
       expect(catsService.create).toEqual(expect.any(Function));
     });
+    it('should invoke the static create method of cat model with a CreateCatDto argument', () => {
+      const createCatDto = new CreateCatDto();
+      catsService.create(createCatDto);
+      expect(catModel.create).toHaveBeenCalled();
+    });
+
+    it('should return the result of invoking the static create method of cat model with a CreateCatDto argument', () => {
+      const createCatDto = new CreateCatDto();
+      expect(catModel.create).toHaveReturnedWith(
+        catsService.create(createCatDto),
+      );
+    });
   });
 
   describe('createMultiple', () => {
     it('should be a method', () => {
       expect(catsService.createMultiple).toEqual(expect.any(Function));
+    });
+
+    it('should invoke the static create method of cat model with a CreateCatArrayDto argument', () => {
+      const createCatArrayDto = new CreateCatArrayDto();
+      catsService.createMultiple(createCatArrayDto);
+      expect(catModel.create).toHaveBeenCalled();
+    });
+
+    it('should return the result of invoking the static create method of cat model with a CreateCatArrayDto argument', () => {
+      const createCatArrayDto = new CreateCatArrayDto();
+      expect(catModel.create).toHaveReturnedWith(
+        catsService.createMultiple(createCatArrayDto),
+      );
     });
   });
 
