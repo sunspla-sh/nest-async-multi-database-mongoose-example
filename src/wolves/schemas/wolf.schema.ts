@@ -20,6 +20,6 @@ export class Wolf {
   owner: Owner;
 }
 
-export const wolfSchema = SchemaFactory.createForClass(Wolf);
+export const WolfSchema = SchemaFactory.createForClass(Wolf);
 
 export type WolfDocument = HydratedDocument<Wolf>;
