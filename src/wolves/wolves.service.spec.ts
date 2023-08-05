@@ -4,12 +4,17 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Model, Types } from 'mongoose';
 import { WolvesService } from './wolves.service';
 import { Wolf } from './schemas/wolf.schema';
-import { NEST_MULTIDB_WOLVES_CONNECTION } from '../constants';
+import {
+  NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION,
+  NEST_MULTIDB_WOLVES_CONNECTION,
+} from '../constants';
 import { CreateWolfDto } from './create-wolf.dto';
+import { Owner } from '../owners/schemas/owner.schema';
 
 describe('WolvesService', () => {
   let wolvesService: WolvesService;
   let wolfModel: DeepMocked<Model<Wolf>>;
+  let ownerModel: DeepMocked<Model<Owner>>;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -19,12 +24,22 @@ describe('WolvesService', () => {
           provide: getModelToken(Wolf.name, NEST_MULTIDB_WOLVES_CONNECTION),
           useValue: createMock<Model<Wolf>>(),
         },
+        {
+          provide: getModelToken(
+            Owner.name,
+            NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION,
+          ),
+          useValue: createMock<Model<Owner>>(),
+        },
       ],
     }).compile();
 
     wolvesService = moduleRef.get<WolvesService>(WolvesService);
     wolfModel = moduleRef.get<Model<Wolf>, DeepMocked<Model<Wolf>>>(
       getModelToken(Wolf.name, NEST_MULTIDB_WOLVES_CONNECTION),
+    );
+    ownerModel = moduleRef.get<Model<Owner>, DeepMocked<Model<Owner>>>(
+      getModelToken(Owner.name, NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION),
     );
   });
 
@@ -58,17 +73,29 @@ describe('WolvesService', () => {
       wolvesService.findById(id);
       expect(wolfModel.findById).toHaveBeenCalledWith(id);
     });
-    it('should invoke the query returned by calling the static find method of wolf model', () => {
+    it('should invoke the populate method on the query returned by calling the static find method of wolf model', () => {
       const id = new Types.ObjectId().toString();
       wolvesService.findById(id);
-      expect(wolfModel.findById(id).exec).toHaveBeenCalled();
+      expect(wolfModel.findById(id).populate).toHaveBeenCalledWith({
+        path: 'owner',
+        model: ownerModel,
+      });
     });
 
-    it('should return the result of invoking the query returned by calling the static find method of wolf model', () => {
+    it('should invoke the exec method on the query returned by invoking the populate method on the query returned by calling the static find method of wolf model', () => {
       const id = new Types.ObjectId().toString();
-      expect(wolfModel.findById(id).exec).toHaveReturnedWith(
-        wolvesService.findById(id),
-      );
+      wolvesService.findById(id);
+      expect(
+        wolfModel.findById(id).populate({ path: 'owner', model: ownerModel })
+          .exec,
+      ).toHaveBeenCalled();
+    });
+    it('should return the result of invoking the exec method on the query returned by invoking the populate method on the query returned by calling the static find method of wolf model', () => {
+      const id = new Types.ObjectId().toString();
+      expect(
+        wolfModel.findById(id).populate({ path: 'owner', model: ownerModel })
+          .exec,
+      ).toHaveReturnedWith(wolvesService.findById(id));
     });
   });
 
