@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import { Cat } from './schemas/cat.schema';
+import { Cat, CatDocument } from './schemas/cat.schema';
 import { CreateCatDto } from './create-cat.dto';
 import { CreateCatArrayDto } from './create-cat-array.dto';
 import { NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION } from '../constants';
@@ -15,19 +15,19 @@ export class CatsService {
     private ownersAndCatsConnection: Connection,
   ) {}
 
-  findAll() {
+  findAll(): Promise<CatDocument[]> {
     return this.catModel.find().exec();
   }
 
-  findById(id: string) {
+  findById(id: string): Promise<CatDocument> {
     return this.catModel.findById(id).exec();
   }
 
-  create(createCatDto: CreateCatDto) {
+  create(createCatDto: CreateCatDto): Promise<CatDocument> {
     return this.catModel.create(createCatDto);
   }
 
-  createMultiple(createCatArrayDto: CreateCatArrayDto) {
+  createMultiple(createCatArrayDto: CreateCatArrayDto): Promise<CatDocument[]> {
     // Transactions only allowed on MongoDb with at least 3 replicas or sharded
     // this.ownersAndCatsConnection.transaction(async (session) => {
     //   const cats = createCatArrayDto.action;
@@ -37,7 +37,7 @@ export class CatsService {
     return this.catModel.create(cats);
   }
 
-  remove(id: string) {
+  remove(id: string): Promise<CatDocument> {
     return this.catModel.findByIdAndDelete(id).exec();
   }
 }
