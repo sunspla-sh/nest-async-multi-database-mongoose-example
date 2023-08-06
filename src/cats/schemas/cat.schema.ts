@@ -18,7 +18,12 @@ export class Cat {
   })
   age: number;
 
-  @Prop({ type: Types.ObjectId, ref: Owner.name, required: true })
+  @Prop({
+    type: Types.ObjectId,
+    ref: Owner.name,
+    required: true,
+    autopopulate: true,
+  })
   owner: Owner;
 }
 
