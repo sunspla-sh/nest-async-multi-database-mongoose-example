@@ -16,6 +16,7 @@ import { AppService } from './app.service';
 import { OwnersModule } from './owners/owners.module';
 import { CatsModule } from './cats/cats.module';
 import { WolvesModule } from './wolves/wolves.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { WolvesModule } from './wolves/wolves.module';
     }),
     OwnersModule,
     CatsModule,
-    WolvesModule
+    WolvesModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
