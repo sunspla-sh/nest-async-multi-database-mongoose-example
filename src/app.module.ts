@@ -1,12 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validate, EnvVariables } from './validation/env/env.validate';
-import {
-  InjectConnection,
-  MongooseModule,
-  getConnectionToken,
-} from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 import {
   NEST_MULTIDB_OWNERS_AND_CATS_CONNECTION,
   NEST_MULTIDB_WOLVES_CONNECTION,

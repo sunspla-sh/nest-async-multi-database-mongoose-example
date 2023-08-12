@@ -6,6 +6,7 @@ enum Environment {
   QA = 'qa',
   STAGING = 'staging',
   PROD = 'prod',
+  TEST = 'test',
 }
 
 export class EnvVariables {
