@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validate, EnvVariables } from './validation/env/env.validate';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -40,6 +41,14 @@ import { EventsModule } from './events/events.module';
     EventsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+      }),
+    },
+  ],
 })
 export class AppModule {}
