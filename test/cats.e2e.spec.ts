@@ -155,7 +155,7 @@ describe('CatsController (e2e)', () => {
 
   it('POST /cats/multiple', async () => {
     const server = app.getHttpServer();
-    const resBadRequest = await request(app)
+    const resBadRequest = await request(server)
       .post('/cats/multiple')
       .send({
         action: [
@@ -163,6 +163,9 @@ describe('CatsController (e2e)', () => {
           { moreData: 'also not a cat', random: 1234 },
         ],
       });
+
+    expect(resBadRequest.statusCode).toBe(400);
+    expect(resBadRequest.body.error).toBe('Bad Request');
 
     const testOwner: Owner = {
       firstName: 'jim',
@@ -174,9 +177,81 @@ describe('CatsController (e2e)', () => {
       name: 'bobby the cat',
       owner: createdOwner.id,
     };
+
+    const resAnotherBadRequest = await request(server)
+      .post('/cats/multiple')
+      .send({
+        action: [testCat, { someData: 'not a cat' }],
+      });
+    expect(resAnotherBadRequest.statusCode).toBe(400);
+    expect(resAnotherBadRequest.body.error).toBe('Bad Request');
+
+    const secondTestCat: Cat = {
+      age: 3,
+      name: 'mittens',
+      owner: createdOwner.id,
+    };
+
+    const resCreated = await request(server)
+      .post('/cats/multiple')
+      .send({
+        action: [testCat, secondTestCat],
+      });
+
+    expect(resCreated.statusCode).toBe(201);
+    expect(resCreated.body).toEqual(expect.any(Array));
+    expect(resCreated.body[0]).toEqual(
+      expect.objectContaining({
+        ...testCat,
+        owner: JSON.parse(JSON.stringify(createdOwner.toJSON())),
+      }),
+    );
+    expect(resCreated.body[1]).toEqual(
+      expect.objectContaining({
+        ...secondTestCat,
+        owner: JSON.parse(JSON.stringify(createdOwner.toJSON())),
+      }),
+    );
+
+    await catModel.findByIdAndDelete(resCreated.body[0]._id);
+    await catModel.findByIdAndDelete(resCreated.body[1]._id);
+    await ownerModel.findByIdAndDelete(createdOwner.id); //id maps to _id in mongoose models
   });
 
-  // it('DELETE /cats/:id', () => {});
+  it('DELETE /cats/:id', async () => {
+    const server = app.getHttpServer();
+
+    const createdOwner = await ownerModel.create({
+      firstName: 'jimbo',
+      lastName: 'bob',
+    });
+
+    const createdCat = await catModel.create({
+      name: 'fluffly',
+      age: 4,
+      owner: createdOwner.id,
+    });
+
+    const resFail = await request(server).delete(`/cats/someFakeId`);
+
+    expect(resFail.statusCode).toBe(400);
+    expect(resFail.body.error).toBe('Bad Request');
+
+    const resDeleted = await request(server).delete(`/cats/${createdCat.id}`);
+    expect(resDeleted.statusCode).toBe(200);
+    expect(resDeleted.body).toEqual(
+      expect.objectContaining({
+        ...JSON.parse(JSON.stringify(createdCat.toJSON())),
+        owner: JSON.parse(JSON.stringify(createdOwner.toJSON())),
+      }),
+    );
+
+    const shouldBeNoCat = await catModel
+      .findOne({ owner: createdOwner.id })
+      .exec();
+
+    expect(shouldBeNoCat).toBe(null);
+  });
 
   afterEach(async () => {
     await app.close();
