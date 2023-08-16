@@ -40,12 +40,68 @@ describe('OwnersController (e2e)', () => {
     await app.init();
   });
 
+  afterEach(async () => {
+    await app.close();
+  });
+
+  afterAll(async () => {
+    await mongod.stop();
+  });
+
   it('GET /owners', async () => {
-    return;
+    const server = app.getHttpServer();
+
+    const testOwner: Owner = {
+      firstName: 'bobert',
+      lastName: 'the fifth',
+    };
+
+    const createdOwner = await ownerModel.create(testOwner);
+
+    const resOneOwner = await request(server).get('/owners');
+    expect(resOneOwner.statusCode).toBe(200);
+    expect(resOneOwner.body).toContainEqual(
+      JSON.parse(JSON.stringify(createdOwner.toJSON())),
+    );
+
+    const secondTestOwner: Owner = {
+      firstName: 'jimbo',
+      lastName: 'the second',
+    };
+
+    const secondCreatedOwner = await ownerModel.create(secondTestOwner);
+    const resTwoOwners = await request(server).get('/owners');
+    expect(resTwoOwners.statusCode).toBe(200);
+    expect(resTwoOwners.body).toContainEqual(
+      JSON.parse(JSON.stringify(createdOwner.toJSON())),
+    );
+    expect(resTwoOwners.body).toContainEqual(
+      JSON.parse(JSON.stringify(secondCreatedOwner.toJSON())),
+    );
+
+    await ownerModel.findByIdAndDelete(createdOwner.id);
+    await ownerModel.findByIdAndDelete(secondCreatedOwner.id);
   });
 
   it('GET /owners/:id', async () => {
-    return;
+    const server = app.getHttpServer();
+
+    const resBadRequest = await request(server).get('/owners/someFakeId');
+    expect(resBadRequest.statusCode).toBe(400);
+    expect(resBadRequest.body.error).toBe('Bad Request');
+
+    const testOwner: Owner = {
+      firstName: 'dude',
+      lastName: 'mclovin',
+    };
+
+    const createdOwner = await ownerModel.create(testOwner);
+
+    const resOwner = await request(server).get(`/owners/${createdOwner.id}`);
+    expect(resOwner.statusCode).toBe(200);
+    expect(resOwner.body).toEqual(
+      JSON.parse(JSON.stringify(createdOwner.toJSON())),
+    );
   });
 
   it('POST /owners', async () => {

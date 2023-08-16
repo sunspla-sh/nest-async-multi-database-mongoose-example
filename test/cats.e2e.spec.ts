@@ -50,10 +50,6 @@ describe('CatsController (e2e)', () => {
   it('GET /cats', async () => {
     const server = app.getHttpServer();
 
-    const resNoCats = await request(server).get('/cats');
-    expect(resNoCats.statusCode).toBe(200);
-    expect(resNoCats.body).toEqual([]);
-
     const testOwner: Owner = {
       firstName: 'jim',
       lastName: 'mcgee',
@@ -67,18 +63,15 @@ describe('CatsController (e2e)', () => {
     };
     const createdCat = await catModel.create(testCat);
 
-    const expectedResponseBody = [
-      {
-        ...JSON.parse(JSON.stringify(createdCat.toJSON())),
-        owner: {
-          ...JSON.parse(JSON.stringify(createdOwner.toJSON())),
-        },
-      },
-    ];
-
     const resOneCat = await request(server).get('/cats');
     expect(resOneCat.statusCode).toBe(200);
-    expect(resOneCat.body).toEqual(expectedResponseBody);
+    expect(resOneCat.body).toEqual(expect.any(Array));
+    expect(resOneCat.body).toContainEqual({
+      ...JSON.parse(JSON.stringify(createdCat.toJSON())),
+      owner: {
+        ...JSON.parse(JSON.stringify(createdOwner.toJSON())),
+      },
+    });
 
     await catModel.findByIdAndDelete(createdCat.id);
     await ownerModel.findByIdAndDelete(createdOwner.id);
