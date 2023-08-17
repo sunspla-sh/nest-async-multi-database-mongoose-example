@@ -102,13 +102,57 @@ describe('OwnersController (e2e)', () => {
     expect(resOwner.body).toEqual(
       JSON.parse(JSON.stringify(createdOwner.toJSON())),
     );
+
+    await ownerModel.findByIdAndDelete(createdOwner.id);
   });
 
   it('POST /owners', async () => {
-    return;
+    const server = app.getHttpServer();
+
+    const resBadRequest = await request(server)
+      .post('/owners')
+      .send({ junk: 'data' });
+
+    expect(resBadRequest.statusCode).toBe(400);
+    expect(resBadRequest.body.error).toBe('Bad Request');
+
+    const testOwner: Owner = {
+      firstName: 'hola',
+      lastName: 'senior',
+    };
+
+    const resCreatedOwner = await request(server)
+      .post('/owners')
+      .send(testOwner);
+
+    expect(resCreatedOwner.statusCode).toBe(201);
+    expect(resCreatedOwner.body).toMatchObject(testOwner);
+    expect(isObjectIdOrHexString(resCreatedOwner.body._id)).toBe(true);
+
+    await ownerModel.findByIdAndDelete(resCreatedOwner.body._id);
   });
 
   it('DELETE /owners', async () => {
-    return;
+    const server = app.getHttpServer();
+
+    const resBadRequest = await request(server).delete('/owners/fakeJunkId');
+    expect(resBadRequest.statusCode).toBe(400);
+    expect(resBadRequest.body.error).toBe('Bad Request');
+
+    const testOwner: Owner = {
+      firstName: 'jimethy',
+      lastName: 'albert',
+    };
+
+    const createdOwner = await ownerModel.create(testOwner);
+
+    const resDeleted = await request(server).delete(
+      `/owners/${createdOwner.id}`,
+    );
+
+    expect(resDeleted.statusCode).toBe(200);
+    expect(resDeleted.body).toEqual(
+      JSON.parse(JSON.stringify(createdOwner.toJSON())),
+    );
   });
 });
