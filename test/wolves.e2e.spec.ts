@@ -10,6 +10,8 @@ import {
   NEST_MULTIDB_WOLVES_CONNECTION,
 } from '../src/constants';
 
+import * as request from 'supertest';
+
 describe('WolvesController (e2e)', () => {
   let mongod: MongoMemoryServer;
   let app: INestApplication;
@@ -57,7 +59,29 @@ describe('WolvesController (e2e)', () => {
   });
 
   it('GET /wolves', async () => {
-    return;
+    const server = app.getHttpServer();
+
+    const testOwner: Owner = {
+      firstName: 'jimbo',
+      lastName: 'bob',
+    };
+
+    const createdOwner = await ownerModel.create(testOwner);
+
+    const firstTestWolf: Wolf = {
+      type: 'dire',
+      owner: createdOwner.id,
+    };
+
+    const firstCreatedWolf = await wolfModel.create(firstTestWolf);
+
+    const resOneWolf = await request(server).get('/wolves');
+    expect(resOneWolf.statusCode).toBe(200);
+    expect(resOneWolf.body).toEqual(expect.any(Array));
+    expect(resOneWolf.body).toContainEqual({
+      ...JSON.parse(JSON.stringify(firstCreatedWolf.toJSON())),
+      owner: createdOwner.id,
+    });
   });
 
   it('GET /wolves/:id', async () => {
